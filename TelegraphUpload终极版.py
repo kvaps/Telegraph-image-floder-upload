@@ -57,7 +57,7 @@ def isImg(f):
     f = str(f)
     if os.path.isdir(f):return '0'
     filename = f[f.rfind("."):]
-    #print(f,filename)
+    filename = filename.lower()
     if filename == '.jpg':
         return 'image/jpg'
     if filename == '.jpeg':
@@ -71,10 +71,10 @@ def isImg(f):
 def tgImgUp(pathq):
     i = 0
     fstr = isImg(pathq)
-    pathq = fsize(pathq)
     if fstr =='0':
         return print('not image')
     else:
+        pathq = fsize(pathq)
         while True:
             try:
                 path = requests.post('https://telegra.ph/upload',files={'file':
@@ -116,7 +116,8 @@ if __name__ == "__main__":
     upload_mark = False
     if not os.path.isdir(sys.path[0] +"\\$temp$"):
         os.mkdir(sys.path[0]+"\\$temp$")
-    print('start...')
+    print('start...',len(sys.argv)-1)
+    floder_count = len(sys.argv) - 1
     for arg in sys.argv:
         if arg == sys.argv[0]:continue
         title = os.path.basename(arg)
@@ -129,7 +130,7 @@ if __name__ == "__main__":
                         print(arg,"has been skipped")
                         upload_mark = True
             if upload_mark ==True:
-                upload_mark == False
+                upload_mark = False
                 continue
             for temp in sorted_aphanumeric(os.listdir(pathEnter(arg))):
                 img.append(tgImgUp(os.path.join(pathEnter(arg),temp)))
@@ -145,8 +146,10 @@ if __name__ == "__main__":
             temp = temp[temp.find("<"):temp.find(">")+1]
             imghtml_all = imghtml_all + temp
         response = tgLink(title,imghtml_all)
+        floder_count-=1
+        print(floder_count)
         if response == "No File Uploaded":
-            input('No file Uploaded,waiting for input')
+            print('No file Uploaded')
         else:
             print('https://telegra.ph/{}'.format(response['path']))
             imghtml_all = ""
